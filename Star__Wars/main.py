@@ -5,8 +5,10 @@ import datetime
 import os
 from prettytable import PrettyTable
 
+#arxeio gia na mhn caxnv synexeia sto api. dyo lejika kai mia lista
 CACHE_FILE = 'cache.json'
 
+#load to arxeio
 def load_cache():
     try:
         with open(CACHE_FILE, 'r') as file:
@@ -28,9 +30,9 @@ def load_cache():
 
 def save_cache(cache):
     with open(CACHE_FILE, 'w') as file:
-        json.dump(cache, file, default=str)  # 'default=str' to handle datetime serialization
+        json.dump(cache, file, default=str)  
 
-
+#synarthsh gia to vizual
 def display_search_history(cache):
     search_history = cache.get('search_history', [])
 
@@ -58,8 +60,8 @@ def display_search_history(cache):
                 birth_year = 'None'
             
             timestamp = entry['timestamp']
-            homeworld_name = entry.get('homeworld_Name', 'None')  # Update this line
-            homeworld_population = entry.get('homeworld_Population', 'None')  # Update this line
+            homeworld_name = entry.get('homeworld_Name', 'None') 
+            homeworld_population = entry.get('homeworld_Population', 'None')  
             years = entry.get('years', 'None')
             days = entry.get('days', 'None')
             table.add_row([inputed_name, character_name, height, mass, birth_year, timestamp, homeworld_name, homeworld_population, years, days])
@@ -112,7 +114,8 @@ def main():
     #arguments, command line
 
     # θέλει να ψάξει?
-    if args.command == "search":  
+    if args.command == "search": 
+
         #καλει την συναρτηση που ρωταει το api                                     
         result, flag, last_searched = search_star_wars_character(args.name, cache)
         save_cache(cache)
@@ -140,10 +143,12 @@ def main():
 
                 #an yparxei
                 if homeworld_data:
+
                     #ta pairnei apo to εμφωλευμενο dictionary
                     homeworld_properties = homeworld_data.get("result", {}).get("properties", {})
                     homeworld_name = homeworld_properties.get("name", "Homeworld Name not found")
                     homeworld_population = homeworld_properties.get("population", "Homeworld Population not found")
+
                     #ta kanei print        
                     print("\nHomeworld")
                     print("----------------")
@@ -159,6 +164,7 @@ def main():
                     print(f"\nIn {homeworld_name}, 1 year on earth is {years} years and 1 day is {days} days")
                 else:
                     print("Homeworld information not available.")
+
             # timestap kai print timestamp
             if flaghome == False:
                 if flag == False:
@@ -189,7 +195,7 @@ def main():
         save_cache(cache)
         print("Cache cleared")
 
-    #θελει να δει το history    
+    #θελει να δει το history?    
     if args.command == "history":
         display_search_history(cache)
  

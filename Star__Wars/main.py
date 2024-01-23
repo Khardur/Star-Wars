@@ -38,7 +38,7 @@ def display_search_history(cache):
         print("No search history available.")
     else:
         # Create a PrettyTable instance with column names
-        table = PrettyTable(["Inputed Name", "Name", "Height", "Mass", "Birth Year", "Timestamp", "Homeworld Name", "Homeworld Population"])  # Update column names here
+        table = PrettyTable(["Inputed Name", "Name", "Height", "Mass", "Birth Year", "Timestamp", "Homeworld Name", "Homeworld Population", "Earth Years", "Earth Days"])  # Update column names here
 
         # Iterate over the search history and add rows to the table
         for entry in search_history:
@@ -60,7 +60,9 @@ def display_search_history(cache):
             timestamp = entry['timestamp']
             homeworld_name = entry.get('homeworld_Name', 'None')  # Update this line
             homeworld_population = entry.get('homeworld_Population', 'None')  # Update this line
-            table.add_row([inputed_name, character_name, height, mass, birth_year, timestamp, homeworld_name, homeworld_population])
+            years = entry.get('years', 'None')
+            days = entry.get('days', 'None')
+            table.add_row([inputed_name, character_name, height, mass, birth_year, timestamp, homeworld_name, homeworld_population, years, days])
 
         # Set the alignment of columns to left
         table.align["Inputed Name"] = "l"
@@ -71,14 +73,11 @@ def display_search_history(cache):
         table.align["Timestamp"] = "l"
         table.align["Homeworld Name"] = "l"
         table.align["Homeworld Population"] = "l"
+        table.align["Earth Years"] = "l"
+        table.align["Earth Days"] = "l"
 
         # Print the table
         print(table)
-
-
-
-
-
 
 
 
@@ -101,8 +100,9 @@ def main():
     search_parser.add_argument("name", nargs='?', default=None, help="Name of the Star Wars character to search for.")
     search_parser.add_argument("--world", action="store_true", help="Retrieve homeworld information.")
 
-    # Subparser for 'clear'
-    clear_parser = subparsers.add_parser('clear', help="Clear the search cache")
+    #'clear'
+    cache_parser = subparsers.add_parser('cache', help="Cache operations")
+    cache_parser.add_argument("--clean", action="store_true", help="Clear the search cache")
 
     # Subparser for 'history'
     history_parser = subparsers.add_parser('history', help="Display search history")
@@ -149,6 +149,14 @@ def main():
                     print("----------------")
                     print(f"Name: {homeworld_name}")
                     print(f"Population: {homeworld_population}")
+
+                    #ypologizv ton enan xrono toy kaue planhth
+                    years= round(float(homeworld_properties.get("orbital_period"))/365,2)
+
+                    #ypologizv thn mia mera toy kaue planhth
+                    days=round(float(homeworld_properties.get("rotation_period"))/24,2)
+
+                    print(f"\nIn {homeworld_name}, 1 year on earth is {years} years and 1 day is {days} days")
                 else:
                     print("Homeworld information not available.")
             # timestap kai print timestamp
@@ -164,7 +172,7 @@ def main():
 
             #ενημερωνω την λιστα στη cache για το viz
             if args.world:
-                cache['search_history'].append({'name': args.name, 'result': result, 'timestamp': timestamp, 'homeworld_Name': homeworld_name, 'homeworld_Population': homeworld_population})
+                cache['search_history'].append({'name': args.name, 'result': result, 'timestamp': timestamp, 'homeworld_Name': homeworld_name, 'homeworld_Population': homeworld_population, 'years':years, 'days': days})
                 save_cache(cache)
             else:
                 cache['search_history'].append({'name': args.name, 'result': result, 'timestamp': timestamp})
@@ -173,9 +181,10 @@ def main():
         #αν δεν υπαρχει
         else:
             print("The force is not strong within you")
+            print(f"\ncached: {last_searched}")
             cache['search_history'].append({'name': args.name, 'result': result, 'timestamp': last_searched})
             save_cache(cache)
-    if args.command == "clear":
+    elif args.command == "cache" and args.clean:
         cache.clear()
         save_cache(cache)
         print("Cache cleared")

@@ -1,9 +1,6 @@
 import requests
 from datetime import datetime
 
-import requests
-from datetime import datetime
-
 def search_star_wars_character(character_name, cache):
     if character_name in cache:
         flag = True
